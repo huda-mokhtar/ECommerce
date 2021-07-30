@@ -1,0 +1,100 @@
+﻿@model ECommerce.Models.ViewModel.ProductItemsView
+@{
+    ViewData["Title"] = "Home Page";
+}
+<button  class=" btn btn-outline-danger offset-11" data-toggle="modal" href="#myModal" onclick="SetProdectList()"><span id="count"><span id='span'>0</span></span> <i class="fa fa-shopping-cart" aria-hidden="true"></i></button>
+<!-- Modal HTML -->
+<div id="myModal" class="modal fade ">
+    <div class="modal-dialog modal-login">
+        <div class="modal-content p-4">
+            <div class=" header">
+                <h5 class="modal-title text-center text-success">Bill</h5>
+                <button type="button" class="close x" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form asp-action="Create" asp-controller="Bills">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Date" class="control-label"><b>Date</b></label>
+                            <input type="datetime" class="form-control" value='@DateTime.Now' disabled/>
+                            <span asp-validation-for="Date" class="text-danger"></span>
+                        </div>
+                        <div class="form-group ">
+                            <label asp-for="Discount" class="control-label"><b>Discount</b></label>
+                            <input asp-for="Discount" type="number"min="0" value="0" class="form-control" />
+                            <span asp-validation-for="Discount" class="text-danger"></span>
+                        </div>
+                        <div class="form-group ">
+                            <label class="control-label"><b>Customer</b></label>
+                            <select asp-for="customerId" class="form-control" asp-items="ViewBag.customerId"></select>
+                        </div>
+                        <div id="Div">
+                            <b>Products</b>
+                        </div>
+                        <div class="form-group">
+                            <input type="button" value="Buy" onclick="CheckOut()" class="btn btn-outline-success text-center" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="featured container no-gutter">
+    <div class="row posts">
+        @foreach (var item in ViewBag.Products)
+        {
+            <div id="1" class="item new col-md-4">
+                <div class="featured-item">
+                    <h4>@item.Name</h4>
+                    <p>@item.Description</p>
+                    <h6>$@item.Price </h6>
+                    <p>Available Quantity:@item.Quantity</p>
+                    <form method="get">
+                        <label for="quantity">Quantity:</label>
+                        <input name="quantity" type="number" class="quantity-text" id="@item.Id"
+                               min="1" max="@item.Quantity" value="1">
+                        <input type="button" onclick='AddToCart(@Html.Raw(Json.Serialize(item)), $("#@item.Id").val())' class="button btn btn-outline-success" value="Add To Card!">
+                    </form>
+                    <h6><span>Discount:</span> $@item.Discount </h6>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script>
+        Items = [];
+        function AddToCart(Item, count) {
+            var OldItem = Items.find(a => a.Item.id == Item.id);
+            console.log(OldItem);
+            if (OldItem == undefined) {
+                Items = [...Items, { Product: Item, Count: count }]
+                $("#span").remove();
+                $("#count").append("<span id='span'>" + Items.length + "</span>");
+            } else {
+                OldItem.Count = count;
+            }
+            console.log(Items);
+        }
+        function SetProdectList() {
+            $(".Id").remove();
+            Items.forEach((i) => {
+                $("#Div").append("<p class='Id ml-4 text-success'>" + i.Product.name + ":" + i.Count + "</p>");
+           })
+        }
+        function CheckOut() {
+            var Data = { Date: $('#Date').val(), Discount: $('#Discount').val(), customerId: $('#customerId').val(), Products: Items }
+            console.log(Data);
+            $.ajax({
+                url: '/Bills/CheackOut',
+                method: 'Post',
+                data: Data,
+                success: (res) => {
+                    console.log(res);
+                }
+            })
+        }
+    </script>
+}

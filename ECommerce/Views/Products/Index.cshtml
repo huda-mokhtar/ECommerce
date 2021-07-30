@@ -1,0 +1,54 @@
+﻿
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table id="Table" class="table tab-content">
+</table>
+@section Scripts{
+    <script>
+        $(function () {
+            $('#Table').dataTable({
+                ajax: {
+                    url: '/Products/ProductsData',
+                    dataSrc: ""
+                },
+                columns: [
+                    { "title": "Id", "data": "id" },
+                    { "title": "Name", "data": "name" },
+                    { "title": "Description", "data": "description" },
+                    { "title": "Quantity", "data": "quantity" },
+                    { "title": "CostPrice", "data": "costPrice" },
+                    { "title": "Price", "data": "price" },
+                    { "title": "Discount", "data": "discount" },
+                    { "title": "Details", "data": "details", render: () => " <button class='btn btn-outline-primary'><i class='fa fa-question'></i></button>" },
+                    { "title": "Update", "data": "update", render: () => " <button class='btn btn-outline-success'><i class='fa fa open-card-option fa-wrench'></i></button>" },
+                    { "title": "Delete", "data": "delete", render: () => " <button class='btn btn-outline-danger' ><i class='fa fa-trash close-card'></i></button>" }
+
+                ]
+            })
+            $('#Table').on('click', 'tr td:nth-child(8)', function () {
+                var Id = $('#Table').DataTable().row(this).data().id;
+                window.location.href = "/Products/Details/" + Id;
+
+            })
+            $('#Table').on('click', 'tr td:nth-child(9)', function () {
+                var Id = $('#Table').DataTable().row(this).data().id;
+                window.location.href = "/Products/Edit/" + Id;
+
+            })
+            $('#Table').on('click', 'tr td:nth-child(10)', function () {
+                var Id = $('#Table').DataTable().row(this).data().id;
+                window.location.href = "/Products/Delete/" + Id;
+
+            })
+        })
+
+    </script>
+
+}
