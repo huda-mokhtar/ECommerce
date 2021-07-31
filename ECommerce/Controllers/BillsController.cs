@@ -19,44 +19,40 @@ namespace ECommerce.Controllers
 
         private readonly IGenericService<ProductItem> _productItemService;
         private readonly IGenericService<Bill> _billService;
-        public BillsController(ApplicationDbContext context, IGenericService<ProductItem> productItemService, IGenericService<Bill> billService)
+        private readonly IGenericService<Product> _productService;
+        public BillsController( IGenericService<ProductItem> productItemService, IGenericService<Bill> billService, IGenericService<Product> productService)
         {
             _productItemService = productItemService;
             _billService = billService;
-            _context = context;
+            _productService = productService;
         }
 
         // GET: Bills
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Bills.Include(b => b.Customer);
-            return View(await applicationDbContext.ToListAsync());
+            return View(_billService.GetAll());
         }
 
         //Post:/CheackOut
         [HttpPost]
-        public IActionResult CheackOut(ProductItemsView Check)
+        public IActionResult CheackOut(CheckOutView Check)
         {
-
             Bill bill = new Bill() { };
             bill.Date = Check.Date;
             bill.Discount = Check.Discount.ToString();
-            bill.customerId = Check.customerId;
+            bill.customerId = Check.CustomerId;
             _billService.Add(bill);
-            List<ProductItem> productItem = new List<ProductItem>() { };
             foreach (var i in Check.Products)
             {
-                foreach (var c in productItem)
-                {
-                    c.BillId = bill.Id;
-                    c.ProductId = i.Product.Id;
-                    c.Quantity = i.Count;
-                }
-            }
+                ProductItem productItem = new ProductItem() { };
+                productItem.BillId = bill.Id;
+                productItem.ProductId = i.Product.Id;
+                productItem.Quantity = i.Count;
+                _productItemService.Add(productItem);
 
-            foreach (var i in productItem)
-            {
-                _productItemService.Add(i);
+                Product oldproduct=_productService.GetById(i.Product.Id);
+                oldproduct.Quantity -= i.Count;
+                _productService.Update(oldproduct);
             }
             return Ok(Check.Products);
         }

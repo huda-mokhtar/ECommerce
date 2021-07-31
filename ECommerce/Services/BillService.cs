@@ -1,4 +1,5 @@
 ﻿using ECommerce.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace ECommerce.Services
         }
         public List<Bill> GetAll()
         {
-            return _db.Bills.ToList();
+            return _db.Bills.Include(b => b.Customer).ToList();
         }
         public Bill GetById(int id)
         {
