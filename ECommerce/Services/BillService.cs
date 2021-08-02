@@ -21,7 +21,7 @@ namespace ECommerce.Services
         }
         public Bill GetById(int id)
         {
-            Bill Bill = _db.Bills.FirstOrDefault(a => a.Id == id);
+            Bill Bill = _db.Bills.Include(b => b.Customer).Include(a=>a.ProductItems).FirstOrDefault(a => a.Id == id);  
             return Bill;
         }
         public List<Bill> Add(Bill Bill)
@@ -45,5 +45,6 @@ namespace ECommerce.Services
             _db.SaveChanges();
             return _db.Bills.ToList();
         }
+     
     }
 }

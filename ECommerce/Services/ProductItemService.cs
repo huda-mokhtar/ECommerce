@@ -17,11 +17,11 @@ namespace ECommerce.Services
         }
         public List<ProductItem> GetAll()
         {
-            return _db.ProductItems.ToList();
+            return _db.ProductItems.Include(a=>a.Product).ToList();
         }
         public ProductItem GetById(int id)
         {
-            ProductItem OrderItem = _db.ProductItems.FirstOrDefault(a => a.Id == id);
+            ProductItem OrderItem = _db.ProductItems.Include(a => a.Product).FirstOrDefault(a => a.Id == id);
             return OrderItem;
         }
         public List<ProductItem> Add(ProductItem OrderItem)
