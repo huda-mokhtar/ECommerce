@@ -86,7 +86,6 @@ namespace ECommerce.Controllers
                 return NotFound();
             }
             decimal total=0;
-            List<Product> products=new List<Product>();
             foreach (var i in bill.ProductItems)
             {
                 foreach (var item in _productService.GetAll())
@@ -94,13 +93,12 @@ namespace ECommerce.Controllers
                     if (item.Id == i.ProductId)
                     {
                         total += (item.Price - (decimal.Parse(item.Discount) + decimal.Parse(i.Discount)))*i.Quantity;
-                        products.Add(item);
                     }
                 }
             }
             total = total - decimal.Parse(bill.Discount);
             ViewData["Total"] = total.ToString();
-            ViewData["products"] = products;
+            ViewData["products"] = _productService.GetAll();
             return View(bill);
         }
 

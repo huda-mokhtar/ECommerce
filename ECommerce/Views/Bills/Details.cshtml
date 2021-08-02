@@ -61,6 +61,8 @@
                             {
                                 @foreach (var i in ViewBag.products)
                                 {
+                                    if (i.Id == item.ProductId)
+                                    {
                                     <div class="row item justify-content-between">
                                         <div class="col-xs-4 desc">
                                             @i.Name
@@ -78,12 +80,13 @@
                                             $@item.Discount
                                         </div>
                                         <div class="Total col-xs-5 amount text-right">
-                                            $ @((i.Price -( decimal.Parse(i.Discount) + decimal.Parse( item.Discount)))*item.Quantity)
+                                            $ @((i.Price - (decimal.Parse(i.Discount) + decimal.Parse(item.Discount))) * item.Quantity)
                                         </div>
 
                                     </div>
+                                        }
+                                    }
                                 }
-                            }
                         </div>
                         <div class="total text-right">
                             <p class="extra-notes">
